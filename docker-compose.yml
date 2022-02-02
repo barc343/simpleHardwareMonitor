@@ -1,0 +1,25 @@
+version: '3.3'
+
+services:
+  web:
+    container_name: simplehw-api
+    restart: unless-stopped
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0
+    volumes:
+      - ./app:/code/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 3010:8000
+  nginx-react:
+    container_name: simplehw-react
+    restart: unless-stopped
+    build:
+      context: ./react-docker/
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_HOST: ${API_HOST}
+    ports:
+      - 3011:80
+    environment:
+      NODE_ENV: production
